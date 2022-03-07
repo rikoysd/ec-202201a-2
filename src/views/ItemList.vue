@@ -15,12 +15,13 @@
     <!-- item list -->
     <div class="item-wrapper">
       <div class="container">
-        <div class="items">
+        <div class="items" v-for="item of items" v-bind:key="item.id">
           <div class="item">
             <div class="item-icon">
               <img src="img/1.jpg" />
             </div>
-            <a href="item_detail.html">ハワイアンパラダイス</a><br />
+            <router-link to="/itemDetail">ハワイアンパラダイス</router-link
+            ><br />
             <span class="price">Ｍ</span>1,380円(税抜)<br />
             <span class="price">Ｌ</span>2,380円(税抜)<br />
           </div>
