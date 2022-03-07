@@ -18,12 +18,12 @@
         <div class="items" v-for="item of items" v-bind:key="item.id">
           <div class="item">
             <div class="item-icon">
-              <img src="img/1.jpg" />
+              <img v-bind:src="itemImgUrl" />
             </div>
-            <router-link to="/itemDetail">ハワイアンパラダイス</router-link
+            <router-link to="/itemDetail">{{ item.name }}</router-link
             ><br />
-            <span class="price">Ｍ</span>1,380円(税抜)<br />
-            <span class="price">Ｌ</span>2,380円(税抜)<br />
+            <span class="price">Ｍ</span>{{ item.priceM }}円(税抜)<br />
+            <span class="price">Ｌ</span>{{ item.priceL }}円(税抜)<br />
           </div>
         </div>
       </div>
@@ -34,7 +34,9 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 @Component
-export default class XXXComponent extends Vue {}
+export default class XXXComponent extends Vue {
+  private itemImgUrl = "";
+}
 </script>
 
 <style scoped></style>

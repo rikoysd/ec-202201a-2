@@ -1,4 +1,4 @@
-import { Topping } from "./Topping";
+import { Topping } from "./topping";
 
 export class Item {
   constructor(
@@ -12,14 +12,6 @@ export class Item {
     private _deleted: boolean,
     private _toppingList: Array<Topping>
   ) {}
-  //価格の表記（Mサイズ）を1000円単位でカンマを入れる
-  get formatPriceM(): string {
-    return this._priceM.toLocaleString();
-  }
-  //価格の表記（Lサイズ）を1000円単位でカンマを入れる
-  get formatPriceL(): string {
-    return this._priceL.toLocaleString();
-  }
 
   public get id(): number {
     return this._id;
