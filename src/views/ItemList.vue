@@ -40,7 +40,8 @@ export default class XXXComponent extends Vue {
   created(): void {
     // actionsのgetItemListを呼び出す
     this.$store.dispatch("getItemList");
-    this.currentItemList = this.$store.state.itemList;
+    // gettersのgetItemListを呼び出す
+    this.currentItemList = this.$store.getters.getItemList;
   }
 }
 </script>

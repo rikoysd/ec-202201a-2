@@ -40,5 +40,11 @@ export default new Vuex.Store({
       context.commit("showItemList", payload);
     },
   },
+  getters:{
+    // stateの商品一覧を表示する
+    getItemList(state){
+      return state.itemList;
+    }
+  },
   modules: {},
 });
