@@ -19,7 +19,7 @@
                 <input id="size-m" name="size" type="radio" checked="checked" />
                 <span>
                   &nbsp;<span class="price">Ｍ</span>&nbsp;&nbsp;{{
-                    currentItem.itemPriceM
+                    currentItem.priceM.toLocaleString()
                   }}円(税抜)</span
                 >
               </label>
@@ -27,7 +27,7 @@
                 <input id="size-l" name="size" type="radio" />
                 <span>
                   &nbsp;<span class="price">Ｌ</span>&nbsp;&nbsp;{{
-                    currentItem.itemPriceL
+                    currentItem.priceL.toLocaleString()
                   }}円(税抜)</span
                 >
               </label>
