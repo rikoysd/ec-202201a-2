@@ -51,46 +51,13 @@
               <span>&nbsp;Ｍ&nbsp;</span>&nbsp;&nbsp;200円(税抜)
               <span>&nbsp;Ｌ</span>&nbsp;&nbsp;300円(税抜)
             </div>
-            <div>
+            <div
+              v-for="topping of currentItem.toppingList"
+              v-bind:key="topping.id"
+            >
               <label class="item-topping">
                 <input type="checkbox" />
-                <span>ハワイアンソルト</span>
-              </label>
-              <label class="item-topping">
-                <input type="checkbox" />
-                <span>ハワイアンマヨネーズ</span>
-              </label>
-              <label class="item-topping">
-                <input type="checkbox" />
-                <span>ハワイアントマト</span>
-              </label>
-              <label class="item-topping">
-                <input type="checkbox" />
-                <span>ブルーチーズ</span>
-              </label>
-              <label class="item-topping">
-                <input type="checkbox" />
-                <span>ハワイアンチョコレート</span>
-              </label>
-              <label class="item-topping">
-                <input type="checkbox" />
-                <span>アンチョビ</span>
-              </label>
-              <label class="item-topping">
-                <input type="checkbox" />
-                <span>エビ</span>
-              </label>
-              <label class="item-topping">
-                <input type="checkbox" />
-                <span>ガーリックスライス</span>
-              </label>
-              <label class="item-topping">
-                <input type="checkbox" />
-                <span>トロピカルフルーツ</span>
-              </label>
-              <label class="item-topping">
-                <input type="checkbox" />
-                <span>ココナッツ</span>
+                <span>{{ topping.name }}</span>
               </label>
             </div>
           </div>
@@ -98,7 +65,7 @@
             <div class="item-hedding item-hedding-quantity">数量</div>
             <div class="item-quantity-selectbox">
               <div class="input-field col s12">
-                <select class="browser-default">
+                <select class="browser-default" v-model="quantity">
                   <option value="" disabled selected>選択して下さい</option>
                   <option value="1">1</option>
                   <option value="2">2</option>
@@ -144,24 +111,44 @@
 import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
 import { Item } from "@/types/Item";
+import { Topping } from "@/types/Topping";
 
 @Component
 export default class XXXComponent extends Vue {
   // 詳細ページに表示される商品
   private currentItem = new Item(0, "", "", "", 0, 0, "", false, []);
-  // デフォルトのサイズ
+  // サイズ
   private selectedSize = "M";
   // 合計金額
   private calcTotalPrice = 0;
+  // 数量
+  private quantity = 1;
 
   async created(): Promise<void> {
     // WebAPIから商品を1件取得する
     const itemId = Number(this.$route.params.id);
-    const response = await axios.get(
+    const responseItem = await axios.get(
       "http://153.127.48.168:8080/ecsite-api/item/" + itemId
     );
-    console.dir("response:" + JSON.stringify(response));
-    this.currentItem = response.data.item;
+    console.dir("response:" + JSON.stringify(responseItem));
+    this.currentItem = responseItem.data.item;
+
+    // WebAPIからトッピング一覧を取得する
+    const responseTopping = await axios.get(
+      "http://153.127.48.168:8080/ecsite-api/item/aloha"
+    );
+    console.dir("response:" + JSON.stringify(responseTopping));
+    for (const topping of responseTopping.data.toppings) {
+      this.currentItem.toppingList.push(
+        new Topping(
+          topping.id,
+          topping.type,
+          topping.name,
+          topping.priceM,
+          topping.priceL
+        )
+      );
+    }
 
     // //合計金額を計算する
     // if(this.selectedSize==="M"){
