@@ -16,7 +16,13 @@
             <div class="item-hedding">サイズ</div>
             <div>
               <label>
-                <input id="size-m" name="size" type="radio" checked="checked" />
+                <input
+                  id="size-m"
+                  name="size"
+                  type="radio"
+                  value="M"
+                  v-model="selectedSize"
+                />
                 <span>
                   &nbsp;<span class="price">Ｍ</span>&nbsp;&nbsp;{{
                     currentItem.priceM.toLocaleString()
@@ -24,7 +30,13 @@
                 >
               </label>
               <label>
-                <input id="size-l" name="size" type="radio" />
+                <input
+                  id="size-l"
+                  name="size"
+                  type="radio"
+                  value="L"
+                  v-model="selectedSize"
+                />
                 <span>
                   &nbsp;<span class="price">Ｌ</span>&nbsp;&nbsp;{{
                     currentItem.priceL.toLocaleString()
@@ -105,7 +117,12 @@
             </div>
           </div>
           <div class="row item-total-price">
-            <span>この商品金額：38,000 円(税抜)</span>
+            <span
+              >この商品金額：{{
+                calcTotalPrice.toLocaleString()
+              }}
+              円(税抜)</span
+            >
           </div>
           <div class="row item-cart-btn">
             <button
@@ -132,6 +149,10 @@ import { Item } from "@/types/Item";
 export default class XXXComponent extends Vue {
   // 詳細ページに表示される商品
   private currentItem = new Item(0, "", "", "", 0, 0, "", false, []);
+  // デフォルトのサイズ
+  private selectedSize = "M";
+  // 合計金額
+  private calcTotalPrice = 0;
 
   async created(): Promise<void> {
     // WebAPIから商品を1件取得する
@@ -141,6 +162,10 @@ export default class XXXComponent extends Vue {
     );
     console.dir("response:" + JSON.stringify(response));
     this.currentItem = response.data.item;
+
+    // //合計金額を計算する
+    // if(this.selectedSize==="M"){
+    // }
   }
 }
 </script>
