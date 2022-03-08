@@ -13,6 +13,16 @@ export class Item {
     private _toppingList: Array<Topping>
   ) {}
 
+  // Mサイズの価格カンマ区切り
+  public get itemPriceM():string{
+    return this.priceM.toLocaleString();
+  }
+
+  // Lサイズの価格カンマ区切り
+  public get itemPriceL():string{
+    return this.priceL.toLocaleString();
+  }
+
   public get id(): number {
     return this._id;
   }
