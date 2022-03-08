@@ -56,7 +56,7 @@
               v-bind:key="topping.id"
             >
               <label class="item-topping">
-                <input type="checkbox" />
+                <input type="checkbox" v-bind:value="topping" />
                 <span>{{ topping.name }}</span>
               </label>
             </div>
@@ -123,6 +123,8 @@ export default class XXXComponent extends Vue {
   private calcTotalPrice = 0;
   // 数量
   private quantity = 1;
+  // 選択されたトッピング一覧
+  private checkedTopping = new Array<Topping>();
 
   async created(): Promise<void> {
     // WebAPIから商品を1件取得する
@@ -152,7 +154,7 @@ export default class XXXComponent extends Vue {
 
     // //合計金額を計算する
     // if(this.selectedSize==="M"){
-    // }
+    // }checkedTopping
   }
 }
 </script>
