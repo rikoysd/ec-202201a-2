@@ -9,9 +9,14 @@ export default new Vuex.Store({
   state: {
     // 商品の配列
     itemList: new Array<Item>(),
+    // 
   },
   mutations: {
-    // payloadのitemsの配列からitemを一つずつ取り出してstateにpushする
+    /**
+     * payloadのitemsの配列からitemを一つずつ取り出してstateにpushする.
+     * @param state - ステート
+     * @param payload - ペイロード
+     */
     showItemList(state, payload) {
       for (const item of payload.items) {
         state.itemList.push(
@@ -31,6 +36,10 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    /**
+     * WebAPIから商品一覧を取得する.
+     * @param context - コンテキスト
+     */
     async getItemList(context) {
       const response = await axios.get(
         "http://153.127.48.168:8080/ecsite-api/item/items/aloha"
@@ -38,6 +47,16 @@ export default new Vuex.Store({
       console.dir("response:" + JSON.stringify(response));
       const payload = response.data;
       context.commit("showItemList", payload);
+    },
+  },
+  getters: {
+    /**
+     * stateの商品一覧を表示する.
+     * @param state - ステート
+     * @returns  stateの商品一覧
+     */
+    getItemList(state) {
+      return state.itemList;
     },
   },
   modules: {},
