@@ -1,12 +1,35 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
+import { Item } from "@/types/item";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {},
-  mutations: {},
+  state: {
+    // 商品の配列
+    itemList: new Array<Item>(),
+  },
+  mutations: {
+    // payloadのitemsの配列からitemを一つずつ取り出してstateにpushする
+    showItemList(state, payload) {
+      for (const item of payload.items) {
+        state.itemList.push(
+          new Item(
+            item.id,
+            item.type,
+            item.name,
+            item.description,
+            item.priceM,
+            item.priceL,
+            item.imagePath,
+            item.deleted,
+            item.toppingList
+          )
+        );
+      }
+    },
+  },
   actions: {
     async getItemList(context) {
       const response = await axios.get(
