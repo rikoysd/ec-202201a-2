@@ -127,4 +127,6 @@ import { Component, Vue } from "vue-property-decorator";
 export default class XXXComponent extends Vue {}
 </script>
 
-<style scoped></style>
+<style scoped>
+@import "../../public/css/item_detail.css";
+</style>
