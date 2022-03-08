@@ -2,14 +2,14 @@
   <div>
     <div class="top-wrapper">
       <div class="container">
-        <h1 class="page-title">Hawaiianパラダイス</h1>
+        <h1 class="page-title">{{ currentItem.name }}</h1>
         <div class="row">
           <div class="row item-detail">
             <div class="item-icon">
-              <img src="img/1.jpg" />
+              <img v-bind:src="currentItem.imagePath" />
             </div>
             <div class="item-intro">
-              ハワイで取れる名産物でかつオーガニックな食料がふんだんに使われたローカルフーズです。健康志向の方に大人気の商品です。
+              {{ currentItem.description }}
             </div>
           </div>
           <div class="row item-size">
@@ -18,15 +18,17 @@
               <label>
                 <input id="size-m" name="size" type="radio" checked="checked" />
                 <span>
-                  &nbsp;<span class="price">Ｍ</span
-                  >&nbsp;&nbsp;1,380円(税抜)</span
+                  &nbsp;<span class="price">Ｍ</span>&nbsp;&nbsp;{{
+                    currentItem.itemPriceM
+                  }}円(税抜)</span
                 >
               </label>
               <label>
                 <input id="size-l" name="size" type="radio" />
                 <span>
-                  &nbsp;<span class="price">Ｌ</span
-                  >&nbsp;&nbsp;2,380円(税抜)</span
+                  &nbsp;<span class="price">Ｌ</span>&nbsp;&nbsp;{{
+                    currentItem.itemPriceL
+                  }}円(税抜)</span
                 >
               </label>
             </div>
@@ -123,8 +125,24 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import axios from "axios";
+import { Item } from "@/types/Item";
+
 @Component
-export default class XXXComponent extends Vue {}
+export default class XXXComponent extends Vue {
+  // 詳細ページに表示される商品
+  private currentItem = new Item(0, "", "", "", 0, 0, "", false, []);
+
+  async created(): Promise<void> {
+    // WebAPIから商品を1件取得する
+    const itemId = Number(this.$route.params.id);
+    const response = await axios.get(
+      "http://153.127.48.168:8080/ecsite-api/item/" + itemId
+    );
+    console.dir("response:" + JSON.stringify(response));
+    this.currentItem = response.data.item;
+  }
+}
 </script>
 
 <style scoped>
