@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
-import { Item } from "@/types/item";
+import { Item } from "@/types/Item";
 
 Vue.use(Vuex);
 

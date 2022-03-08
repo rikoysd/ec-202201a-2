@@ -15,7 +15,7 @@
     <!-- item list -->
     <div class="item-wrapper">
       <div class="container">
-        <div class="items" v-for="item of items" v-bind:key="item.id">
+        <div class="items" v-for="item of currentItemList" v-bind:key="item.id">
           <div class="item">
             <div class="item-icon">
               <img v-bind:src="itemImgUrl" />
@@ -32,11 +32,21 @@
 </template>
 
 <script lang="ts">
+import { Item } from "@/types/Item";
 import { Component, Vue } from "vue-property-decorator";
 @Component
 export default class XXXComponent extends Vue {
+  private currentItemList = new Array<Item>();
   private itemImgUrl = "";
+
+  created(): void {
+    // actionsのgetItemListを呼び出す
+    this.$store.dispatch("getItemList");
+    this.currentItemList = this.$store.state.itemList;
+  }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+@import "../../public/css/item_list.css";
+</style>
