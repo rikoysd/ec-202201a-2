@@ -63,7 +63,7 @@
                   type="checkbox"
                   v-bind:value="topping"
                   v-on:change="calcSubTotalPrice"
-                  v-model="checkedToppingList"
+                  v-model="checkedTopping"
                 />
                 <span>{{ topping.name }}</span>
               </label>
@@ -107,7 +107,8 @@
             <button
               class="btn"
               type="button"
-              onclick="location.href='cart_list.html'"
+              onclick="location.href='/cartList'"
+              v-on:click="addCartList"
             >
               <span>カートに入れる</span>
             </button>
@@ -124,6 +125,7 @@ import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
 import { Item } from "@/types/Item";
 import { Topping } from "@/types/Topping";
+import { OrderItem } from "@/types/OrderItem";
 
 @Component
 export default class XXXComponent extends Vue {
@@ -136,7 +138,9 @@ export default class XXXComponent extends Vue {
   // 数量
   private quantity = 1;
   // 選択されたトッピング一覧
-  private checkedTopping = Array<Topping>();
+  private checkedTopping = [];
+  // 選択された商品
+  private selectedItem = new Item(0, "", "", "", 0, 0, "", true, []);
 
   async created(): Promise<void> {
     // WebAPIから商品を1件取得する
@@ -196,6 +200,41 @@ export default class XXXComponent extends Vue {
       }
     }
     this.itemSubTotalPrice = (sizePrice + toppingPrice) * this.quantity;
+  }
+  /**
+   * カートに商品を追加する
+   */
+  addCartList(): void {
+    const order = this.$store.getters.getOrder;
+    const orderItemList = order.orderItemList;
+    const latestOrderItem = orderItemList[orderItemList.length - 1];
+    console.log(latestOrderItem);
+    let newOrderId = 0;
+    if (latestOrderItem !== undefined) {
+      newOrderId = latestOrderItem.id + 1;
+    }
+    const orderItem = new OrderItem(
+      newOrderId,
+      this.selectedItem.id,
+      -1,
+      this.quantity,
+      this.selectedSize,
+      new Item(
+        this.selectedItem.id,
+        this.selectedItem.type,
+        this.selectedItem.name,
+        this.selectedItem.description,
+        this.selectedItem.priceM,
+        this.selectedItem.priceL,
+        this.selectedItem.imagePath,
+        this.selectedItem.deleted,
+        this.selectedItem.toppingList
+      ),
+      this.checkedTopping
+    );
+    this.$store.commit("addItem", orderItem);
+    // ショッピングカート一覧に遷移する
+    this.$router.push("/cartList");
   }
 }
 </script>

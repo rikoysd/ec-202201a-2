@@ -2,6 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
 import { Item } from "@/types/Item";
+import { Order } from "@/types/Order";
+import { User } from "@/types/User";
 
 Vue.use(Vuex);
 
@@ -9,7 +11,23 @@ export default new Vuex.Store({
   state: {
     // 商品の配列
     itemList: new Array<Item>(),
-    // 
+    // orderオブジェクト
+    order: new Order(
+      0,
+      0,
+      0,
+      0,
+      new Date(),
+      "",
+      "",
+      "",
+      "",
+      "",
+      new Date(),
+      0,
+      new User(0, "", "", "", "", "", ""),
+      []
+    ),
   },
   mutations: {
     /**
@@ -34,6 +52,12 @@ export default new Vuex.Store({
         );
       }
     },
+    /**
+     * stateのorderItemListに商品を追加する.
+     */
+    addItem(state, payload) {
+      state.order.orderItemList.push(payload);
+    },
   },
   actions: {
     /**
@@ -57,6 +81,12 @@ export default new Vuex.Store({
      */
     getItemList(state) {
       return state.itemList;
+    },
+    /**
+     * 注文を情報を取得する.
+     */
+    getOrder(state) {
+      return state.order;
     },
   },
   modules: {},
