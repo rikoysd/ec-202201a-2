@@ -21,6 +21,7 @@
                   name="size"
                   type="radio"
                   value="M"
+                  v-on:change="calcSubTotalPrice"
                   v-model="selectedSize"
                 />
                 <span>
@@ -35,6 +36,7 @@
                   name="size"
                   type="radio"
                   value="L"
+                  v-on:change="calcSubTotalPrice"
                   v-model="selectedSize"
                 />
                 <span>
@@ -51,12 +53,18 @@
               <span>&nbsp;Ｍ&nbsp;</span>&nbsp;&nbsp;200円(税抜)
               <span>&nbsp;Ｌ</span>&nbsp;&nbsp;300円(税抜)
             </div>
-            <div
-              v-for="topping of currentItem.toppingList"
-              v-bind:key="topping.id"
-            >
-              <label class="item-topping">
-                <input type="checkbox" v-bind:value="topping" />
+            <div>
+              <label
+                class="item-topping"
+                v-for="topping of currentItem.toppingList"
+                v-bind:key="topping.id"
+              >
+                <input
+                  type="checkbox"
+                  v-bind:value="topping"
+                  v-on:change="calcSubTotalPrice"
+                  v-model="checkedTopping"
+                />
                 <span>{{ topping.name }}</span>
               </label>
             </div>
@@ -65,7 +73,11 @@
             <div class="item-hedding item-hedding-quantity">数量</div>
             <div class="item-quantity-selectbox">
               <div class="input-field col s12">
-                <select class="browser-default" v-model="quantity">
+                <select
+                  class="browser-default"
+                  v-model="quantity"
+                  v-on:change="calcSubTotalPrice"
+                >
                   <option value="" disabled selected>選択して下さい</option>
                   <option value="1">1</option>
                   <option value="2">2</option>
@@ -86,7 +98,7 @@
           <div class="row item-total-price">
             <span
               >この商品金額：{{
-                calcTotalPrice.toLocaleString()
+                itemSubTotalPrice.toLocaleString()
               }}
               円(税抜)</span
             >
@@ -95,7 +107,8 @@
             <button
               class="btn"
               type="button"
-              onclick="location.href='cart_list.html'"
+              onclick="location.href='/cartList'"
+              v-on:click="addCartList"
             >
               <span>カートに入れる</span>
             </button>
@@ -112,6 +125,8 @@ import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
 import { Item } from "@/types/Item";
 import { Topping } from "@/types/Topping";
+import { OrderItem } from "@/types/OrderItem";
+import { OrderTopping } from "@/types/OrderTopping";
 
 @Component
 export default class XXXComponent extends Vue {
@@ -120,11 +135,13 @@ export default class XXXComponent extends Vue {
   // サイズ
   private selectedSize = "M";
   // 合計金額
-  private calcTotalPrice = 0;
+  private itemSubTotalPrice = 0;
   // 数量
   private quantity = 1;
   // 選択されたトッピング一覧
-  private checkedTopping = new Array<Topping>();
+  private checkedTopping = Array<OrderTopping>();
+  // 選択された商品
+  private selectedItem = new Item(0, "", "", "", 0, 0, "", true, []);
 
   async created(): Promise<void> {
     // WebAPIから商品を1件取得する
@@ -133,11 +150,22 @@ export default class XXXComponent extends Vue {
       "http://153.127.48.168:8080/ecsite-api/item/" + itemId
     );
     console.dir("response:" + JSON.stringify(responseItem));
-    this.currentItem = responseItem.data.item;
+    let resItem = responseItem.data.item;
+    this.currentItem = new Item(
+      resItem.id,
+      resItem.type,
+      resItem.name,
+      resItem.description,
+      resItem.priceM,
+      resItem.priceL,
+      resItem.imagePath,
+      resItem.deleted,
+      resItem.toppingList
+    );
 
     // WebAPIからトッピング一覧を取得する
     const responseTopping = await axios.get(
-      "http://153.127.48.168:8080/ecsite-api/item/aloha"
+      "http://153.127.48.168:8080/ecsite-api/item/toppings/aloha"
     );
     console.dir("response:" + JSON.stringify(responseTopping));
     for (const topping of responseTopping.data.toppings) {
@@ -151,10 +179,63 @@ export default class XXXComponent extends Vue {
         )
       );
     }
-
-    // //合計金額を計算する
-    // if(this.selectedSize==="M"){
-    // }checkedTopping
+  }
+  /**
+   * 小計金額を計算する.
+   */
+  calcSubTotalPrice(): void {
+    let toppingPrice = 0;
+    let sizePrice = 0;
+    if (this.selectedSize === "M") {
+      sizePrice = this.currentItem.priceM;
+    }
+    if (this.selectedSize === "L") {
+      sizePrice = this.currentItem.priceL;
+    }
+    for (let orderTopping of this.checkedTopping) {
+      if (this.selectedSize === "M") {
+        toppingPrice += orderTopping.topping.priceM;
+      }
+      if (this.selectedSize === "L") {
+        toppingPrice += orderTopping.topping.priceL;
+      }
+    }
+    this.itemSubTotalPrice = (sizePrice + toppingPrice) * this.quantity;
+  }
+  /**
+   * カートに商品を追加する
+   */
+  addCartList(): void {
+    const order = this.$store.getters.getOrder;
+    const orderItemList = order.orderItemList;
+    const latestOrderItem = orderItemList[orderItemList.length - 1];
+    console.log(latestOrderItem);
+    let newOrderId = 0;
+    if (latestOrderItem !== undefined) {
+      newOrderId = latestOrderItem.id + 1;
+    }
+    const orderItem = new OrderItem(
+      newOrderId,
+      this.selectedItem.id,
+      -1,
+      this.quantity,
+      this.selectedSize,
+      new Item(
+        this.selectedItem.id,
+        this.selectedItem.type,
+        this.selectedItem.name,
+        this.selectedItem.description,
+        this.selectedItem.priceM,
+        this.selectedItem.priceL,
+        this.selectedItem.imagePath,
+        this.selectedItem.deleted,
+        this.selectedItem.toppingList
+      ),
+      this.checkedTopping
+    );
+    this.$store.commit("addItem", orderItem);
+    // ショッピングカート一覧に遷移する
+    this.$router.push("/cartList");
   }
 }
 </script>
