@@ -126,6 +126,7 @@ import axios from "axios";
 import { Item } from "@/types/Item";
 import { Topping } from "@/types/Topping";
 import { OrderItem } from "@/types/OrderItem";
+import { OrderTopping } from "@/types/OrderTopping";
 
 @Component
 export default class XXXComponent extends Vue {
@@ -138,7 +139,7 @@ export default class XXXComponent extends Vue {
   // 数量
   private quantity = 1;
   // 選択されたトッピング一覧
-  private checkedTopping = [];
+  private checkedTopping = Array<OrderTopping>();
   // 選択された商品
   private selectedItem = new Item(0, "", "", "", 0, 0, "", true, []);
 
@@ -191,12 +192,12 @@ export default class XXXComponent extends Vue {
     if (this.selectedSize === "L") {
       sizePrice = this.currentItem.priceL;
     }
-    for (let topping of this.checkedTopping) {
+    for (let orderTopping of this.checkedTopping) {
       if (this.selectedSize === "M") {
-        toppingPrice += topping.priceM;
+        toppingPrice += orderTopping.topping.priceM;
       }
       if (this.selectedSize === "L") {
-        toppingPrice += topping.priceL;
+        toppingPrice += orderTopping.topping.priceL;
       }
     }
     this.itemSubTotalPrice = (sizePrice + toppingPrice) * this.quantity;
